@@ -79,9 +79,13 @@ Users can authenticate, create a unique handle, upload a profile picture, add cu
 Create a `.env.local` file for development:
 
 NEXTAUTH_URL=http://localhost:3000
+
 NEXTAUTH_SECRET=your_secret_here
+
 MONGODB_URI=your_mongodb_connection_string
+
 GOOGLE_CLIENT_ID=your_google_client_id
+
 GOOGLE_CLIENT_SECRET=your_google_client_secret
 
 
