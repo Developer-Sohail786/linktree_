@@ -113,8 +113,8 @@ Premium plan system
 ## Installation (Local Development)
 
 ```bash
-git clone https://github.com/Developer-Sohail786/linktree.git
-cd linktree
+git clone https://github.com/Developer-Sohail786/linktree_.git
+cd linktree_
 npm install
-npm run dev.
+npm run dev
 
