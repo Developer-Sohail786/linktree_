@@ -16,6 +16,7 @@ const Generate = () => {
   const [handle, sethandle] = useState(searchParams.get('handle'))
   const [desc, setdesc] = useState("")
   const [selectedFile, setselectedFile] = useState(null)
+  const [loading, setLoading] = useState(false);
 
 
 
@@ -36,6 +37,9 @@ const Generate = () => {
     setlinks(links.concat([{ link: "", linktext: "" }]))
   }
   const submitLinks = async () => {
+
+    if (loading) return;   // to double click
+    setLoading(true);
 
     if (!selectedFile) {
       toast.error("Please upload a profile picture");
@@ -216,11 +220,11 @@ const Generate = () => {
                 />
 
                 <button
-                  disabled={!selectedFile || !handle || !links.length || !links[0].linktext}
-                  onClick={() => submitLinks()}
+                  disabled={loading || !selectedFile || !handle || !links.length || !links[0].linktext}
+                  onClick={submitLinks}
                   className="disabled:bg-slate-500 border-none bg-slate-800 text-white px-6 py-2 rounded-full my-5 cursor-pointer w-7/12 lg:w-fit lg:relative lg:right-6"
                 >
-                  Create your Link Tree
+                  {loading ? "Creating..." : "Create your Link Tree"}
                 </button>
               </div>
             </div>
