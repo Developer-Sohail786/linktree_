@@ -17,6 +17,8 @@ const Generate = () => {
   const [desc, setdesc] = useState("")
   const [selectedFile, setselectedFile] = useState(null)
   const [loading, setLoading] = useState(false);
+  const [aiLoading, setAiLoading] = useState(false);
+  const [aiSuggestions, setAiSuggestions] = useState(null);
 
 
 
@@ -119,6 +121,53 @@ const Generate = () => {
       toast.error(result.message);
     }
   };
+
+  const optimizeWithAI = async () => {
+
+    try {
+
+      if (!desc.trim() && !links.length) {
+        return;
+      }
+
+      setAiLoading(true);
+
+      const response = await fetch("/api/ai-optimize", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          desc,
+          links: links.map((item) => ({
+            title: item.linktext,
+          })),
+        }),
+      });
+
+      const data = await response.json();
+      console.log(data);
+
+      if (data.success) {
+
+        setAiSuggestions(data.data);
+
+      }
+      else{
+        toast.error(data.message)
+      }
+
+    } catch (error) {
+
+    toast.error(
+  "AI service unavailable right now due to high traffic"
+);
+
+    } finally {
+
+      setAiLoading(false);
+    }
+  };
   return (
     <>
       <div className='bg-[#E9C0E9] min-h-screen grid grid-cols-1 lg:grid-cols-2'>
@@ -187,6 +236,144 @@ const Generate = () => {
                 + Add Link
               </button>
 
+              <button
+                type="button"
+                onClick={optimizeWithAI}
+                disabled={aiLoading}
+                className="border bg-purple-600 text-white px-4 py-2 rounded-full my-2 cursor-pointer w-fit hover:bg-purple-700 disabled:opacity-50"
+              >
+                {
+                  aiLoading
+                    ? "Optimizing..."
+                    : " Optimize With AI"
+                }
+              </button>
+           {
+  aiSuggestions && (
+    <div className="mt-6 rounded-3xl border border-purple-200 bg-gradient-to-br from-white to-purple-50 p-6 shadow-xl">
+
+      {/* TOP */}
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
+
+        <div>
+          <h2 className="text-2xl font-bold text-gray-800 flex items-center gap-2">
+             AI Suggestions
+          </h2>
+
+          <p className="text-sm text-gray-500 mt-1">
+            Review AI improvements before applying changes
+          </p>
+        </div>
+
+        <div className="bg-purple-100 text-purple-700 px-4 py-2 rounded-full text-sm font-semibold w-fit">
+          AI Powered
+        </div>
+
+      </div>
+
+      {/* BIO SECTION */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-6">
+
+        {/* BEFORE */}
+        <div className="bg-white border border-gray-200 rounded-2xl p-5 shadow-sm">
+
+          <p className="text-sm font-semibold text-gray-400 mb-3">
+            Current Bio
+          </p>
+
+          <p className="font-medium text-gray-800">
+            {desc}
+          </p>
+
+        </div>
+
+        {/* AFTER */}
+        <div className="bg-gradient-to-r from-purple-100 to-indigo-100 border border-purple-300 rounded-2xl p-5 shadow-sm">
+
+          <p className="text-sm font-semibold text-purple-600 mb-3">
+            AI Optimized Bio
+          </p>
+
+          <p className="font-medium text-gray-800">
+            {aiSuggestions.bio}
+          </p>
+
+        </div>
+
+      </div>
+
+      {/* LINKS */}
+      <div className="space-y-4">
+
+        {
+          links.map((item, index) => (
+
+            <div
+              key={index}
+              className="grid grid-cols-1 md:grid-cols-2 gap-4"
+            >
+
+              {/* BEFORE */}
+              <div className="bg-white border border-gray-200 rounded-2xl p-4 shadow-sm">
+
+                <p className="text-xs text-gray-400 mb-2">
+                  Current Title
+                </p>
+
+                <p className="font-medium text-gray-800">
+                  {item.linktext}
+                </p>
+
+              </div>
+
+              {/* AFTER */}
+              <div className="bg-gradient-to-r from-purple-100 to-indigo-100 border border-purple-300 rounded-2xl p-4 shadow-sm">
+
+                <p className="text-xs text-purple-500 mb-2">
+                  AI Suggested Title
+                </p>
+
+                <p className="font-medium text-gray-800">
+                  {aiSuggestions.links[index]?.title}
+                </p>
+
+              </div>
+
+            </div>
+          ))
+        }
+
+      </div>
+
+      {/* APPLY BUTTON */}
+      <div className="mt-6 flex justify-end">
+
+        <button
+          type="button"
+          onClick={() => {
+
+            setdesc(aiSuggestions.bio);
+
+            setlinks((prev) =>
+              prev.map((item, index) => ({
+                ...item,
+                linktext:
+                  aiSuggestions.links[index]?.title || item.linktext,
+              }))
+            );
+
+            setAiSuggestions(null);
+          }}
+          className="px-6 py-3 rounded-2xl bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-semibold shadow-lg hover:scale-105 transition-all duration-300 cursor-pointer"
+        >
+           Apply AI Changes
+        </button>
+
+      </div>
+
+    </div>
+  )
+}
             </div>
 
 

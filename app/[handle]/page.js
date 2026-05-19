@@ -25,7 +25,11 @@ export default async function Page({ params }) {
 }));
 
   return (
+    <>
+    
     <div className="flex min-h-screen bg-linear-to-b from-purple-100 to-white justify-center items-start pt-24 sm:pt-28 md:pt-32 px-4">
+      {/* Nav btns */}
+   
       <div className="photo flex justify-center flex-col items-center gap-4 w-full max-w-md">
         <img
           className="w-20 h-20 sm:w-24 sm:h-24 rounded-full object-cover"
@@ -43,8 +47,19 @@ export default async function Page({ params }) {
 
         <ClickCount links={serializedLinks} handle={item.handle} />
 
-     
-      </div>
+        <div className="">
+    <Link
+  href="/dashboard"
+  className="bg-black text-white px-4 py-2 rounded cursor-pointer hover:bg-gray-800 w-auto inline-block"
+>
+  Go to Dashboard
+</Link>
+      
     </div>
+      </div>
+       
+    </div>
+ 
+    </>
   );
 }
